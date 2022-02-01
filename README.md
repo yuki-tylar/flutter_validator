@@ -11,29 +11,36 @@ and the Flutter guide for
 [developing packages and plugins](https://flutter.dev/developing-packages). 
 -->
 
-TODO: Put a short description of the package here that helps potential users
-know whether this package might be useful for them.
-
 ## Features
 
-TODO: List what your package can do. Maybe include images, gifs, or videos.
-
+Form validator for flutter
 ## Getting started
 
-TODO: List prerequisites and provide or point to information on how to
-start using the package.
+Copy file `flutter_validator.dart` into your project.
 
 ## Usage
 
-TODO: Include short and useful examples for package users. Add longer examples
-to `/example` folder. 
-
 ```dart
-const like = 'sample';
+const validator = Validator.required();
+validator.validate(''); // --> returned value will be String 'Required' because passed value is empty string.
 ```
 
-## Additional information
+You can customize error message.
+```dart
+const validator = Validator.required(errorMessage: 'Please enter your name');
+validator.validate(null); // --> returned value will be String 'Please enter your name'
+```
 
-TODO: Tell users more about the package: where to find more information, how to 
-contribute to the package, how to file issues, what response they can expect 
-from the package authors, and more.
+Available validators
+* required
+* email
+* price 
+* password
+* minLength
+* maxLength
+
+You can customize price pattern & password pattern
+```dart
+const validator1 = Validator.price(pattern=r'\d{4,}');
+const validator2 = Validator.password(pattern=r'^(?=.*[A-Z])[a-zA-Z\d]{8,}$');
+```
