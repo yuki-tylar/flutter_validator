@@ -1,4 +1,4 @@
-library flutter_validator;
+library validator;
 
 class Validator {
   late ValidatorType type;
@@ -27,6 +27,13 @@ class Validator {
         r'^(?=.*[A-Z])(?=.*\d)[a-zA-Z\d.!#$%&*+-/=?^_`{|}~\]\*]{8,}$',
   }) {
     type = ValidatorType.pattern;
+  }
+
+  Validator.integer({
+    this.errorMessage = 'Invalid number',
+  }) {
+    type = ValidatorType.pattern;
+    pattern = r'\d{1,}';
   }
 
   Validator.price({
