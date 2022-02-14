@@ -4,8 +4,8 @@ class Validator {
   late ValidatorType type;
   String errorMessage;
   String? pattern;
-  int minLength = 0;
-  int maxLength = 100000;
+  int min = 0;
+  int max = 100000;
 
   Validator.required({
     this.errorMessage = 'Required',
@@ -44,38 +44,127 @@ class Validator {
   }
 
   Validator.minLength(
-    this.minLength, {
+    minLength, {
     this.errorMessage = 'Too short',
   }) {
     type = ValidatorType.minLength;
+    min = minLength;
   }
   Validator.maxLength(
-    this.maxLength, {
+    maxLength, {
     this.errorMessage = 'Too long',
   }) {
     type = ValidatorType.maxLength;
+    max = maxLength;
   }
 
-  String? validate(String? value) {
+  Validator.min(
+    this.min, {
+    this.errorMessage = 'Select at least {min}',
+  }) {
+    type = ValidatorType.min;
+    errorMessage = errorMessage.replaceAll('{min}', '$min');
+  }
+
+  Validator.max(
+    this.max, {
+    this.errorMessage = 'Select {max} or less',
+  }) {
+    type = ValidatorType.max;
+    errorMessage = errorMessage.replaceAll('{max}', '$max');
+  }
+
+  String? validate(dynamic value) {
     String? error;
 
     switch (type) {
       case ValidatorType.required:
-        error = (value != null && value.isNotEmpty) ? null : errorMessage;
+        if (value == null) {
+          error = errorMessage;
+        } else if (value is! String) {
+          error = null;
+        } else if (value.isEmpty) {
+          error = errorMessage;
+        } else {
+          error = null;
+        }
         break;
       case ValidatorType.pattern:
-        error = (value == null ||
-                pattern != null && RegExp(pattern!).hasMatch(value))
-            ? null
-            : errorMessage;
+        if (value == null) {
+          error = null;
+        } else if (value is! String) {
+          error = errorMessage;
+        } else if (RegExp(pattern!).hasMatch(value)) {
+          error = null;
+        } else {
+          error = errorMessage;
+        }
         break;
       case ValidatorType.minLength:
-        error =
-            (value == null || value.length >= minLength) ? null : errorMessage;
+        if (value == null) {
+          error = null;
+        } else if (value is! String) {
+          error =
+              'validator error: Passed value type is ${value.runtimeType}. This type is not allowed to pass Validator.minLength';
+        } else if (value.length < min) {
+          error = errorMessage;
+        } else {
+          error = null;
+        }
         break;
       case ValidatorType.maxLength:
-        error =
-            (value == null || value.length <= maxLength) ? null : errorMessage;
+        if (value == null) {
+          error = null;
+        } else if (value is! String) {
+          error =
+              'validator error: Passed value type is ${value.runtimeType}. This type is not allowed to pass Validator.maxLength';
+        } else if (value.length > max) {
+          error = errorMessage;
+        } else {
+          error = null;
+        }
+        break;
+
+      case ValidatorType.min:
+        if (value == null) {
+          error = null;
+        } else if (value is List) {
+          if (value.length < min) {
+            error = errorMessage;
+          } else {
+            error = null;
+          }
+        } else if (value is int || value is double) {
+          if (value < min) {
+            error = errorMessage;
+          } else {
+            error = null;
+          }
+        } else {
+          error =
+              'validator error: Passed value type is ${value.runtimeType}. This type is not allowed to pass Validator.min';
+        }
+        break;
+
+      case ValidatorType.max:
+        if (value == null) {
+          error = null;
+        } else if (value is List) {
+          if (value.length > max) {
+            error = errorMessage;
+          } else {
+            error = null;
+          }
+        } else if (value is int || value is double) {
+          if (value > max) {
+            error = errorMessage;
+          } else {
+            error = null;
+          }
+        } else {
+          error =
+              'validator error: Passed value type is ${value.runtimeType}. This type is not allowed to pass Validator.max';
+        }
         break;
     }
     return error;
@@ -87,4 +176,6 @@ enum ValidatorType {
   pattern,
   minLength,
   maxLength,
+  min,
+  max,
 }

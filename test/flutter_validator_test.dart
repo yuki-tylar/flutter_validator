@@ -57,6 +57,13 @@ void main() {
     expect(t.validate('Ad E5'), isNot(null));
     expect(t.validate('abder123458'), null);
     expect(t.validate('abder 123458'), null);
+
+    var val = ['test1', 'test2'];
+    expect(t.validate(val),
+        'validator error: Passed value type is ${val.runtimeType}. This type is not allowed to pass Validator.minLength');
+    var val1 = {'test': true};
+    expect(t.validate(val1),
+        'validator error: Passed value type is ${val1.runtimeType}. This type is not allowed to pass Validator.minLength');
   });
 
   test('maxLength', () {
@@ -66,5 +73,54 @@ void main() {
     expect(t.validate('Ad E5'), null);
     expect(t.validate('abder123458'), isNot(null));
     expect(t.validate('abder 123458'), isNot(null));
+
+    var val = ['test1', 'test2'];
+    expect(t.validate(val),
+        'validator error: Passed value type is ${val.runtimeType}. This type is not allowed to pass Validator.maxLength');
+    var val1 = {'test': true};
+    expect(t.validate(val1),
+        'validator error: Passed value type is ${val1.runtimeType}. This type is not allowed to pass Validator.maxLength');
+  });
+
+  test('min', () {
+    var t = Validator.min(2, errorMessage: 'Please select 2 or more');
+    expect(t.validate(null), null);
+    expect(t.validate(['test1']), 'Please select 2 or more');
+    expect(t.validate(['test1', 'test2']), null);
+    expect(t.validate(['test1', 'test2', 'test3']), null);
+
+    var val = 'test';
+    expect(t.validate(val),
+        'validator error: Passed value type is ${val.runtimeType}. This type is not allowed to pass Validator.min');
+    var val1 = {'test': true};
+    expect(t.validate(val1),
+        'validator error: Passed value type is ${val1.runtimeType}. This type is not allowed to pass Validator.min');
+
+    var t2 = Validator.min(2, errorMessage: 'Please enter 2 or more');
+    expect(t2.validate(1), 'Please enter 2 or more');
+    expect(t2.validate(1.5), 'Please enter 2 or more');
+    expect(t2.validate(5), null);
+    expect(t2.validate(5.7), null);
+  });
+
+  test('max', () {
+    var t = Validator.max(2, errorMessage: 'Please select 2 or less');
+    expect(t.validate(null), null);
+    expect(t.validate(['test1']), null);
+    expect(t.validate(['test1', 'test2']), null);
+    expect(t.validate(['test1', 'test2', 'test3']), 'Please select 2 or less');
+
+    var val = 'test';
+    expect(t.validate(val),
+        'validator error: Passed value type is ${val.runtimeType}. This type is not allowed to pass Validator.max');
+    var val1 = {'test': true};
+    expect(t.validate(val1),
+        'validator error: Passed value type is ${val1.runtimeType}. This type is not allowed to pass Validator.max');
+
+    var t2 = Validator.max(100, errorMessage: 'Please enter {max} or less');
+    expect(t2.validate(101), 'Please enter 100 or less');
+    expect(t2.validate(100.58), 'Please enter 100 or less');
+    expect(t2.validate(5), null);
+    expect(t2.validate(5.2), null);
   });
 }
