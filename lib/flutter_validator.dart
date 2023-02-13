@@ -177,7 +177,7 @@ class Validator {
         break;
 
       case ValidatorType.match:
-        if (value != target.text) {
+        if (value != target?.text) {
           error = errorMessage;
         } else {
           error = null;
