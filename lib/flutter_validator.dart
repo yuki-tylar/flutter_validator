@@ -1,4 +1,5 @@
 library validator;
+import 'package:flutter/material.dart';
 
 class Validator {
   late ValidatorType type;
@@ -179,7 +180,7 @@ class Validator {
         if (value != target.text) {
           error = errorMessage;
         } else {
-          error null;
+          error = null;
         }
         break;
     }
