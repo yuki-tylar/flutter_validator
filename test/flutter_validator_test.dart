@@ -123,4 +123,11 @@ void main() {
     expect(t2.validate(5), null);
     expect(t2.validate(5.2), null);
   });
+
+  test('match', () {
+    var target = TextEditingController(text: '');
+    var t = Validator.match(target);
+    expect(t.validate(''), null);
+    expect(t.validate('test', 'Not matched'));
+  })
 }

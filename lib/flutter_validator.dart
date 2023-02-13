@@ -6,6 +6,7 @@ class Validator {
   String? pattern;
   int min = 0;
   int max = 100000;
+  TextEditingController? target;
 
   Validator.required({
     this.errorMessage = 'Required',
@@ -24,7 +25,7 @@ class Validator {
   Validator.password({
     this.errorMessage = 'Invalid password',
     this.pattern =
-        r'^(?=.*[A-Z])(?=.*\d)[a-zA-Z\d.!#$%&*+-/=?^_`{|}~\]\*]{8,}$',
+        r'^(?=.*[A-Z])(?=.*\d)[a-zA-Z\d.!#$%&*+-/=?^_`{|}~\]\*\\]{8,}$',
   }) {
     type = ValidatorType.pattern;
   }
@@ -72,6 +73,13 @@ class Validator {
   }) {
     type = ValidatorType.max;
     errorMessage = errorMessage.replaceAll('{max}', '$max');
+  }
+
+  Validator.match(
+    this.target, {
+    this.errorMessage = 'Not matched',
+  }) {
+    type = ValidatorType.match;
   }
 
   String? validate(dynamic value) {
@@ -166,6 +174,14 @@ class Validator {
               'validator error: Passed value type is ${value.runtimeType}. This type is not allowed to pass Validator.max';
         }
         break;
+
+      case ValidatorType.match:
+        if (value != target.text) {
+          error = errorMessage;
+        } else {
+          error null;
+        }
+        break;
     }
     return error;
   }
@@ -178,4 +194,5 @@ enum ValidatorType {
   maxLength,
   min,
   max,
+  match,
 }
